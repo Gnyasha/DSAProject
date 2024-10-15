@@ -7,7 +7,7 @@ namespace DSAProject.DataStorageModule
     /// </summary>
     public class Trie
     {
-        private class TrieNode
+        public class TrieNode
         {
             public Dictionary<char, TrieNode> Children { get; set; }
             public bool IsEndOfWord { get; set; }
@@ -21,7 +21,7 @@ namespace DSAProject.DataStorageModule
             }
         }
 
-        private TrieNode root;
+        public TrieNode root;
 
         public Trie()
         {
@@ -91,7 +91,7 @@ namespace DSAProject.DataStorageModule
         {
             if (node.IsEndOfWord)
             {
-                results.Add(node.Contact); 
+                results.Add(node.Contact);
             }
 
             foreach (var child in node.Children)
