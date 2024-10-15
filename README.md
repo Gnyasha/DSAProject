@@ -30,7 +30,7 @@ This Phonebook Application is a simple yet efficient phonebook management system
 ---
 
 ## Modules
-The application is divided into three primary modules:
+The application is divided into four primary modules:
 
 ### 1. Data Storage Module
 Handles contact storage using a **Hash Table** and **Trie**, providing efficient insertion, searching, and deletion:
@@ -50,7 +50,10 @@ This module provides helper functions to support the operations:
 - **ValidatePhoneNumber**: Ensures phone numbers start with '0' and contain exactly 5 digits.
 - **DisplayContacts**: Displays contacts alphabetically by iterating through the Trie or Hash Table.
 
----
+### 4. Backup & Restore Module
+- **Manuel Backup**:Enables users to back up their contacts manually to a local or cloud location.
+- **Auto Backup**: Automatically backs up contacts at predefined intervals.
+- **Restore**:Restores contacts from a previously saved backup file or cloud service.
 
 ## Project Structure
 The project is organized into multiple folders, ensuring modularity and separation of concerns as discussed above:
@@ -93,6 +96,11 @@ The project is organized into multiple folders, ensuring modularity and separati
 ### Utility Module
 - **ValidatePhoneNumber(phone)**: Checks if a phone number starts with '0' and is exactly 5 digits long.
 - **DisplayContacts()**: Lists all contacts in alphabetical order by performing a depth-first traversal of the Trie or sorting the Hash Table output.
+
+### Backup & Restore Module
+-**Backup**: A user enables automatic cloud backups, which sync their contact list every day.
+
+-**Restore**: If the user loses their phone, they can restore all contacts on a new device by logging into their cloud account and selecting the most recent backup.
 
 ---
 
