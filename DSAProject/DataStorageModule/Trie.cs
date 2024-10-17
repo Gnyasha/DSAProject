@@ -3,10 +3,13 @@
 namespace DSAProject.DataStorageModule
 {
     /// <summary>
-    /// This class will allow prefix-based access for contacts and is helpful for autocompletion etc.
+    /// This class implements a trie data structure to store contacts
     /// </summary>
     public class Trie
     {
+        /// <summary>
+        /// This is a node in the trie
+        /// </summary>
         public class TrieNode
         {
             public Dictionary<char, TrieNode> Children { get; set; }
@@ -21,20 +24,31 @@ namespace DSAProject.DataStorageModule
             }
         }
 
+        /// <summary>
+        /// The root node of the trie
+        /// </summary>
         public TrieNode root;
 
+        /// <summary>
+        /// Constructor to initialize the trie
+        /// </summary>
         public Trie()
         {
             root = new TrieNode();
         }
 
-        // Initializes the trie
+        /// <summary>
+        /// Initializes the trie
+        /// </summary>
         public void InitializeTrie()
         {
             root = new TrieNode();
         }
 
-        // Inserts a new contact into the trie
+        /// <summary>
+        ///  Inserts a new contact into the trie
+        /// </summary>
+        /// <param name="contact"></param>
         public void InsertContact(Contact contact)
         {
             TrieNode node = root;
@@ -50,7 +64,11 @@ namespace DSAProject.DataStorageModule
             node.Contact = contact;
         }
 
-        // Searches for a contact by name
+        /// <summary>
+        /// Searches for a contact by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Contact SearchContact(string name)
         {
             TrieNode node = root;
@@ -65,9 +83,17 @@ namespace DSAProject.DataStorageModule
             return node.IsEndOfWord ? node.Contact : null;
         }
 
+        /// <summary>
+        /// Searches for contacts by prefix
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public List<Contact> SearchContactsByPrefix(string prefix)
         {
             var results = new List<Contact>();
+            if (string.IsNullOrEmpty(prefix))
+                return results; // No prefix, return empty list
+
             var node = root;
 
             foreach (var ch in prefix)
@@ -87,6 +113,12 @@ namespace DSAProject.DataStorageModule
             return results;
         }
 
+        /// <summary>
+        /// Finds all contacts starting from a given node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="prefix"></param>
+        /// <param name="results"></param>
         private void FindAllContacts(TrieNode node, string prefix, List<Contact> results)
         {
             if (node.IsEndOfWord)
@@ -100,7 +132,11 @@ namespace DSAProject.DataStorageModule
             }
         }
 
-        // Deletes a contact by name
+        /// <summary>
+        /// Deletes a contact by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool DeleteContact(string name)
         {
             return DeleteContactHelper(root, name, 0);
@@ -148,7 +184,7 @@ namespace DSAProject.DataStorageModule
             {
                 if (!node.Children.ContainsKey(ch))
                 {
-                    return false; // Contact not found in the trie
+                    return false;
                 }
                 node = node.Children[ch];
             }
@@ -168,13 +204,17 @@ namespace DSAProject.DataStorageModule
                     node.Contact.Phone = newPhone; // Update phone if name is the same
                 }
 
-                return true; // Successfully updated
+                return true;
             }
 
-            return false; // Contact not found with the specified current name and phone
+            return false; // Contact not found 
         }
 
-        // Retrieves all contacts with a given prefix
+        /// <summary>
+        /// Retrieves all contacts with a given prefix
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public List<Contact> GetContactsByPrefix(string prefix)
         {
             TrieNode node = root;
@@ -193,6 +233,11 @@ namespace DSAProject.DataStorageModule
             return contacts;
         }
 
+        /// <summary>
+        /// Finds all contacts starting from a given node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="contacts"></param>
         private void GetAllContactsFromNode(TrieNode node, List<Contact> contacts)
         {
             if (node == null)

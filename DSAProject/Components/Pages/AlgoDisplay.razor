@@ -3,88 +3,52 @@
 @using DSAProject.Models
 @using DSAProject.OperationsModule
 @inject ContactOperations contactOperations
+@using DSAProject.UtilityModule
+@using MudBlazor
+@using System.Text
+@using static DSAProject.DataStorageModule.Trie
 
-<MudGrid>
-    @foreach (var level in TrieLevels)
-    {
-        if (level == null || level.Count == 0)
-            continue; // Skip null or empty levels
-
-        <MudItem xs="12" Class="d-flex justify-center mb-2">
-            @foreach (var contact in level)
-            {
-                var width = 12 / level.Count;
-                <MudItem xs="@width" Class="d-flex justify-center mb-2">
-                    <MudCard Style="width: 200px;">
-                        <MudCardContent Class="d-flex flex-column align-center justify-center">
-                            <!-- Display first character of the name in the avatar, centered -->
-                            <MudAvatar Color="Color.Secondary" Size="Size.Large" Class="mb-2">
-                                @contact[0].ToString().ToUpper()
-                            </MudAvatar>
-
-                            <!-- Display the full name of the contact, centered -->
-                            <MudText Typo="Typo.body1" Align="Align.Center">@contact.Split(':')[0].Trim()</MudText>
-
-                            <!-- Display the phone number, centered -->
-                            <MudText Typo="Typo.body2" Align="Align.Center">Phone: @(contact.Split(':')[1].Trim())</MudText>
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
-            }
-        </MudItem>
-    }
-</MudGrid>
-
-
-
-
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudText Typo="Typo.h5">Trie Structure Demo - Contact Names</MudText>
+    <MudMarkdown Value="@markdownOutput" />
+</MudContainer>
 
 @code {
-    private List<List<string>> TrieLevels = new List<List<string>>();
+    private TrieNode TrieRoot { get; set; } = new TrieNode();
+    private string markdownOutput = string.Empty;
 
     protected override void OnInitialized()
     {
-        // Load and insert contacts into the Trie
+        // Fetch sorted contacts and add them to the Trie
         var contacts = contactOperations.SortContacts();
-        var trie = new Trie();
-
         foreach (var contact in contacts)
         {
-            trie.InsertContact(contact);
+            AddContactToTrie(contact.Name, contact.Phone);
         }
 
-        // Now, traverse the Trie to build a list of contacts by levels for display
-        TrieLevels = BuildTrieLevels(trie);
+        // Generator for markdown representation of the Trie
+        var markdownGenerator = new TrieMarkdownGenerator(TrieRoot);
+        markdownOutput = markdownGenerator.GenerateMarkdown();
     }
 
-    // Traverses the Trie and organizes contacts by levels
-    private List<List<string>> BuildTrieLevels(Trie trie)
+    private void AddContactToTrie(string contactName, string phoneNumber)
     {
-        var levels = new List<List<string>>();
-        TraverseTrie(trie.root, "", levels, 0);
-        return levels;
-    }
-
-    private void TraverseTrie(Trie.TrieNode node, string currentName, List<List<string>> levels, int level)
-    {
-        if (node == null)
-            return;
-
-        // Ensure we have a list for the current level
-        if (levels.Count == level)
+        var currentNode = TrieRoot;
+        foreach (char character in contactName)
         {
-            levels.Add(new List<string>());
+            if (!currentNode.Children.ContainsKey(character))
+            {
+                currentNode.Children[character] = new TrieNode();
+            }
+            currentNode = currentNode.Children[character];
         }
 
-        if (node.IsEndOfWord && node.Contact != null)
-        {
-            levels[level].Add($"{node.Contact.Name}: {node.Contact.Phone}");
-        }
-
-        // Recursively traverse each child node
-        foreach (var child in node.Children)
-        {
-            TraverseTrie(child.Value, currentName + child.Key, levels, level + 1);
-        }
+        // Only initialize the Contact object at the end of the word
+        currentNode.IsEndOfWord = true;
+        currentNode.Contact = new Contact
+            {
+                Name = contactName,
+                Phone = phoneNumber
+            };
     }
 }

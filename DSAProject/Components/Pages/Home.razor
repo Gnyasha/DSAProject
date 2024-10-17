@@ -1,6 +1,8 @@
 ﻿@page "/"
+@using Bogus
 @using DSAProject.Models
 @using DSAProject.OperationsModule
+@using DSAProject.UtilityModule
 @inject ContactOperations contactOperations
 @inject IDialogService DialogService
 @rendermode InteractiveServer
@@ -14,6 +16,7 @@
     </MudCardContent>
     <MudCardActions>
         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenCreateDialog()">Create Contact</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => GenerateRandomContacts()">Create Random Contacts</MudButton>
     </MudCardActions>
 </MudCard>
 
@@ -49,7 +52,7 @@
                                 Name : @contact.Name
                             </MudItem>
                             <MudItem xs="6" sm="3">
-                              Phone : @contact.Phone
+                                Phone : @contact.Phone
                             </MudItem>
                             <MudItem xs="6" sm="3">
                                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => OpenEditDialog(contact)" StartIcon="@Icons.Material.Filled.Edit">
@@ -77,6 +80,7 @@
     private List<Contact> Contacts = new List<Contact>();
     private string _searchString;
     private string _message;
+    private const int RandomContactCount = 10;
 
     protected override void OnInitialized()
     {
@@ -137,17 +141,17 @@
 
         if (!result.Canceled)
         {
-            var editedContact = (Contact)result.Data;
+            var createdContact = (Contact)result.Data;
 
             try
             {
-                contactOperations.InsertContact(editedContact.Name, editedContact.Phone);
-                _message = $"Contact '{editedContact.Name}' created successfully.";
+                contactOperations.InsertContact(createdContact.Name, createdContact.Phone);
+                _message = $"Contact '{createdContact.Name}' created successfully.";
                 LoadContacts();
             }
             catch (Exception ex)
             {
-                _message = $"Failed to create contact '{editedContact.Name}'. {ex.Message}";
+                _message = $"Failed to create contact '{createdContact.Name}'. {ex.Message}";
             }
 
         }
@@ -161,4 +165,21 @@
         _message = $"Contact '{contact.Name}' has been deleted.";
         LoadContacts();
     }
+
+    private void GenerateRandomContacts()
+    {
+        Contacts.Clear();
+
+        var faker = new Faker<Contact>()
+            .RuleFor(c => c.Name, f => f.Name.FullName())
+            .RuleFor(c => c.Phone, f => "0" + f.Random.Int(1000, 9999).ToString());
+
+        var newContacts = faker.Generate(RandomContactCount).Where(c => PhoneNumberValidator.ValidatePhoneNumber(c.Phone)).ToList();
+        foreach (var contact in newContacts)
+        {
+            contactOperations.InsertContact(contact.Name, contact.Phone);
+        }
+        LoadContacts();
+    }
+
 }

@@ -1,6 +1,7 @@
 using Blazored.Modal;
 using DSAProject.Components;
 using DSAProject.OperationsModule;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<ContactOperations>();
 builder.Services.AddBlazoredModal();
 builder.Services.AddMudServices();
+builder.Services.AddMudMarkdownServices();
 builder.Services.AddMudBlazorDialog();
 var app = builder.Build();
 

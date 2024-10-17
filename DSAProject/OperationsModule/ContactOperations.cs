@@ -3,6 +3,9 @@ using DSAProject.Models;
 
 namespace DSAProject.OperationsModule
 {
+    /// <summary>
+    /// Represents operations that can be performed on contacts
+    /// </summary>
     public class ContactOperations
     {
         private readonly HashTable hashTable;
@@ -15,14 +18,20 @@ namespace DSAProject.OperationsModule
             Initialize();
         }
 
-        // Initializes both data structures
+        /// <summary>
+        /// Initializes the HashTable and Trie data structures
+        /// </summary>
         private void Initialize()
         {
             hashTable.InitializeHashTable();
             trie.InitializeTrie();
         }
 
-        // Inserts a new contact into both the HashTable and Trie
+        /// <summary>
+        /// Inserts a new contact into both the HashTable and Trie
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="phone"></param>
         public void InsertContact(string name, string phone)
         {
             var contact = new Contact(name, phone);
@@ -31,10 +40,14 @@ namespace DSAProject.OperationsModule
             Console.WriteLine($"Contact '{name}' inserted successfully.");
         }
 
-        // Searches for a contact by name in both HashTable and Trie
+        /// <summary>
+        /// Searches for a contact by name in both HashTable and Trie
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Contact SearchContact(string name)
         {
-            // You can use either structure; here we use Trie for prefix-based searches
+            // We can use either structure, that is hashtable or trie; here we use Trie for prefix-based searches
             Contact contact = trie.SearchContact(name);
             if (contact != null)
             {
@@ -45,6 +58,11 @@ namespace DSAProject.OperationsModule
             return null;
         }
 
+        /// <summary>
+        /// Searches for contacts by prefix in the Trie
+        /// </summary>
+        /// <param name="namePrefix"></param>
+        /// <returns></returns>
         public IEnumerable<Contact> SearchContacts(string namePrefix)
         {
             var contacts = trie.SearchContactsByPrefix(namePrefix);
@@ -62,7 +80,11 @@ namespace DSAProject.OperationsModule
         }
 
 
-        // Deletes a contact by name from both HashTable and Trie
+        /// <summary>
+        ///  Deletes a contact by name from both HashTable and Trie
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool DeleteContact(string name)
         {
             bool hashTableDeleted = hashTable.DeleteContact(name);
@@ -77,7 +99,14 @@ namespace DSAProject.OperationsModule
             return false;
         }
 
-        // Updates a contact's phone number in both HashTable and Trie
+        /// <summary>
+        /// Updates a contact's phone number in both HashTable and Trie
+        /// </summary>
+        /// <param name="currentName"></param>
+        /// <param name="currentPhone"></param>
+        /// <param name="newName"></param>
+        /// <param name="newPhone"></param>
+        /// <returns></returns>
         public bool UpdateContact(string currentName, string currentPhone, string newName, string newPhone)
         {
             // Check for the contact in the hash table first
@@ -96,7 +125,10 @@ namespace DSAProject.OperationsModule
         }
 
 
-        // Sorts contacts alphabetically and returns a list of sorted contacts
+        /// <summary>
+        /// Sorts contacts alphabetically and returns a list of sorted contacts
+        /// </summary>
+        /// <returns></returns>
         public List<Contact> SortContacts()
         {
             // Since the Trie can store contacts in alphabetical order, we use it here
@@ -106,7 +138,9 @@ namespace DSAProject.OperationsModule
             return sortedContacts;
         }
 
-        // Displays all contacts sorted alphabetically
+        /// <summary>
+        /// Displays all contacts sorted alphabetically
+        /// </summary>
         public void DisplayContacts()
         {
             List<Contact> contacts = SortContacts();
